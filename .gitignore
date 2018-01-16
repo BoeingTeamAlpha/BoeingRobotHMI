@@ -1,0 +1,17 @@
+.jxbrowser-data
+.metadata
+RemoteSystemsTempFiles
+RoboticsCapeInclude
+*.ccsproject
+*.cproject
+*.project
+*.prefs
+*.cmd
+*.user
+*.map
+*.xml
+*.d
+*.obj
+*.mk
+*.opt
+makefile
