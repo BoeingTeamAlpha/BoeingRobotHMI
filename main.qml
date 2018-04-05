@@ -22,33 +22,30 @@ ApplicationWindow {
 		orientation: Qt.Vertical
 	}
 
-		Label {
-			id: rightmotorlabel
-			x: 1095
-			y: 21
-			width: 185
-			height: 25
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			text: qsTr("Right Drive Control")
-			color: "#f4f4f4"
-		}
+	Label {
+		id: rightmotorlabel
+		x: 1095
+		y: 21
+		width: 185
+		height: 25
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+		text: qsTr("Right Drive Control")
+		color: "#f4f4f4"
+	}
 
-
-		Text {
-			id: rightmotorvalue
-			x: 1187
-			y: 379
-			width: 62
-			height: 45
-			color: "#f4f4f4"
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			text: rightMotorValue
-			font.pixelSize: 12
-		}
-
-
+	Text {
+		id: rightmotorvalue
+		x: 1187
+		y: 379
+		width: 62
+		height: 45
+		color: "#f4f4f4"
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+		text: rightMotorValue
+		font.pixelSize: 12
+	}
 
 	Slider {
 		id: leftmotorcontrol
@@ -61,33 +58,32 @@ ApplicationWindow {
 		value: BoeingVehicleControl.leftDriveMotor
 		to: 100
 		from: -100
-}
-		Label {
-			id: leftmotorlabel
-			x: 11
-			y: 21
-			width: 185
-			height: 25
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			text: qsTr("Left Drive Control")
-			color: "#f4f4f4"
-		}
+	}
 
-		Text {
-			id: leftmotorvalue
-			x: 22
-			y: 378
-			width: 62
-			height: 45
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			color: "#f4f4f4"
-			text: leftMotorValue
-			font.pixelSize: 12
-		}
+	Label {
+		id: leftmotorlabel
+		x: 11
+		y: 21
+		width: 185
+		height: 25
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+		text: qsTr("Left Drive Control")
+		color: "#f4f4f4"
+	}
 
-
+	Text {
+		id: leftmotorvalue
+		x: 22
+		y: 378
+		width: 62
+		height: 45
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+		color: "#f4f4f4"
+		text: leftMotorValue
+		font.pixelSize: 12
+	}
 
 	Slider {
 		id: dumpbedraiselower
@@ -214,12 +210,6 @@ ApplicationWindow {
 	property int gripperOpenClose: gripperopenclose.value
 	onGripperOpenCloseChanged: BoeingVehicleControl.setGripperOpenClose( gripperOpenClose )
 
-
-
-
-
-
-
 	ProgressBar {
 		id: batterypercent
 		x: 531
@@ -266,5 +256,4 @@ ApplicationWindow {
 		text: qsTr("MetalDetected")
 		color: "#f4f4f4"
 	}
-
 }
