@@ -10,10 +10,12 @@
 
 #define ReceiveMessageSize ( 4 )
 #define SendMessageSize ( 16 )
-#define BluetoothPollRate ( 250 )
+#define BluetoothPollRate ( 50 )
 
 BoeingVehicleControl::BoeingVehicleControl()
 	: QObject()
+	, _batteryPercent( 0 )
+	, _metalDetected( false )
 {
 	_receiveMessage.resize( ReceiveMessageSize );
 	_sendMessage.resize( SendMessageSize );
@@ -65,13 +67,23 @@ uint BoeingVehicleControl::gripperOpenClose() const
 	return ( _sendMessage[ SendMessageIndex::GripperOpenClose ] << 8 ) | ( _sendMessage[ SendMessageIndex::GripperOpenClose - 1 ] );
 }
 
+uint BoeingVehicleControl::batteryPercent() const
+{
+	return _receiveMessage[ 0 ];
+}
+
+bool BoeingVehicleControl::metalDetected() const
+{
+	return _receiveMessage[ 1 ] & 0x01;
+}
+
 void BoeingVehicleControl::update()
 {
-	for ( int j = 0; j < _sendMessage.size(); ++j )
-	{
-		qDebug() << j << (uint8_t)_sendMessage[ j ];// << endl;
-	}
-	qDebug() << "updating" <<
+//	for ( int j = 0; j < _sendMessage.size(); ++j )
+//	{
+//		qDebug() << j << (uint8_t)_sendMessage[ j ];// << endl;
+//	}
+//	qDebug() << "updating" <<
 	_socket->write( _sendMessage );
 }
 
@@ -80,7 +92,6 @@ void BoeingVehicleControl::setLeftDriveMotor( const int dutyCycle )
 	uint16_t temp = static_cast< uint16_t >( dutyCycle );
 	_sendMessage[ SendMessageIndex::LeftDriveMotor - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::LeftDriveMotor ] = ( temp >> 8 ) & 0xff;
-	emit leftDriveMotorChanged();
 }
 
 void BoeingVehicleControl::setRightDriveMotor( const int dutyCycle )
@@ -88,7 +99,6 @@ void BoeingVehicleControl::setRightDriveMotor( const int dutyCycle )
 	uint16_t temp = static_cast< uint16_t >( dutyCycle );
 	_sendMessage[ SendMessageIndex::RightDriveMotor - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::RightDriveMotor ] = ( temp >> 8 ) & 0xff;
-	emit rightDriveMotorChanged();
 }
 
 void BoeingVehicleControl::setCameraLeftRight( const uint dutyCycle )
@@ -96,7 +106,7 @@ void BoeingVehicleControl::setCameraLeftRight( const uint dutyCycle )
 	uint16_t temp = static_cast< uint16_t >( dutyCycle );
 	_sendMessage[ SendMessageIndex::CameraLeftRight - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::CameraLeftRight ] = ( temp >> 8 ) & 0xff;
-	emit cameraLeftRightChanged();
+//	emit cameraLeftRightChanged();
 }
 
 void BoeingVehicleControl::setDumpBedRaiseLower( const uint dutyCycle )
@@ -104,7 +114,7 @@ void BoeingVehicleControl::setDumpBedRaiseLower( const uint dutyCycle )
 	uint16_t temp = static_cast< uint16_t >( dutyCycle );
 	_sendMessage[ SendMessageIndex::DumpBedRaiseLower - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::DumpBedRaiseLower ] = ( temp >> 8 ) & 0xff;
-	emit dumpBedRaiseLowerChanged();
+//	emit dumpBedRaiseLowerChanged();
 }
 
 void BoeingVehicleControl::setGripperRaiseLower( const uint dutyCycle )
@@ -112,7 +122,7 @@ void BoeingVehicleControl::setGripperRaiseLower( const uint dutyCycle )
 	uint16_t temp = static_cast< uint16_t >( dutyCycle );
 	_sendMessage[ SendMessageIndex::GripperRaiseLower - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::GripperRaiseLower ] = ( temp >> 8 ) & 0xff;
-	emit gripperRaiseLowerChanged();
+//	emit gripperRaiseLowerChanged();
 }
 
 void BoeingVehicleControl::setGripperOpenClose( const uint dutyCycle )
@@ -120,7 +130,25 @@ void BoeingVehicleControl::setGripperOpenClose( const uint dutyCycle )
 	uint16_t temp = static_cast< uint16_t >( dutyCycle );
 	_sendMessage[ SendMessageIndex::GripperOpenClose - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::GripperOpenClose ] = ( temp >> 8 ) & 0xff;
-	emit gripperOpenCloseChanged();
+//	emit gripperOpenCloseChanged();
+}
+
+void BoeingVehicleControl::setLeftMotorSliderChangedState( bool isPressed )
+{
+	if ( !isPressed )
+	{
+		setLeftDriveMotor( 0 );
+	}
+	emit leftDriveMotorChanged();
+}
+
+void BoeingVehicleControl::setRightMotorSliderChangedState( bool isPressed )
+{
+	if ( !isPressed )
+	{
+		setRightDriveMotor( 0 );
+	}
+	emit rightDriveMotorChanged();
 }
 
 void BoeingVehicleControl::socketError( QBluetoothSocket::SocketError error )
@@ -149,6 +177,15 @@ void BoeingVehicleControl::socketError( QBluetoothSocket::SocketError error )
 void BoeingVehicleControl::readSocket()
 {
 	_receiveMessage = _socket->readAll();
+//	qDebug() << "read " << _receiveMessage.size();
+
+//	for ( int j = 0; j < _receiveMessage.size(); ++j )
+//	{
+//		qDebug() << j << (uint8_t)_receiveMessage[ j ];// << endl;
+//	}
+
+	emit batteryPercentChanged();
+	emit metalDetectedChanged();
 }
 
 void BoeingVehicleControl::peerConnected()

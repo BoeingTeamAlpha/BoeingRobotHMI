@@ -1,7 +1,7 @@
 #ifndef BOEINGVEHICLECONTROL_H
 #define BOEINGVEHICLECONTROL_H
 
-#include <QBluetoothSocket>
+#include <QtBluetooth/QBluetoothSocket>
 #include <QByteArray>
 #include <QObject>
 #include <QTimer>
@@ -15,6 +15,10 @@ class BoeingVehicleControl : public QObject
 	Q_PROPERTY( uint dumpBedRaiseLower	READ dumpBedRaiseLower	WRITE setDumpBedRaiseLower	NOTIFY dumpBedRaiseLowerChanged )
 	Q_PROPERTY( uint gripperRaiseLower	READ gripperRaiseLower	WRITE setGripperRaiseLower	NOTIFY gripperRaiseLowerChanged )
 	Q_PROPERTY( uint gripperOpenClose	READ gripperOpenClose	WRITE setGripperOpenClose	NOTIFY gripperOpenCloseChanged )
+	Q_PROPERTY( uint batteryPercent		READ batteryPercent									NOTIFY batteryPercentChanged )
+	Q_PROPERTY( bool metalDetected		READ metalDetected									NOTIFY metalDetectedChanged )
+	Q_PROPERTY( bool leftMotorSliderChangedState				WRITE setLeftMotorSliderChangedState	NOTIFY leftDriveMotorChanged )
+	Q_PROPERTY( bool rightMotorSliderChangedState				WRITE setRightMotorSliderChangedState	NOTIFY rightDriveMotorChanged )
 
 private:
 
@@ -22,6 +26,8 @@ private:
 	QByteArray _receiveMessage;
 	QByteArray _sendMessage;
 	QTimer* _timer;
+	uint _batteryPercent;
+	bool _metalDetected;
 
 public:
 	BoeingVehicleControl();
@@ -40,6 +46,10 @@ public:
 
 	uint gripperOpenClose() const;
 
+	uint batteryPercent() const;
+
+	bool metalDetected() const;
+
 public slots:
 
 	void update();
@@ -55,6 +65,10 @@ public slots:
 	void setGripperRaiseLower( const uint dutyCycle );
 
 	void setGripperOpenClose( const uint dutyCycle );
+
+	void setLeftMotorSliderChangedState( bool isPressed );
+
+	void setRightMotorSliderChangedState( bool isPressed );
 
 	void socketError( QBluetoothSocket::SocketError error );
 
@@ -77,6 +91,10 @@ Q_SIGNALS:
 	void gripperRaiseLowerChanged();
 
 	void gripperOpenCloseChanged();
+
+	void batteryPercentChanged();
+
+	void metalDetectedChanged();
 
 private:
 

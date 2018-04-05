@@ -5,7 +5,8 @@ struct ReceiveMessageIndex
 {
 	enum Enum
 	{
-		MetalDetected = 0,
+		BatteryPercentage = 0,
+		MetalDetected,
 		NUM_INDEX
 	};
 };
