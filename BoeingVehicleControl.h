@@ -17,17 +17,19 @@ class BoeingVehicleControl : public QObject
 	Q_PROPERTY( uint gripperOpenClose	READ gripperOpenClose	WRITE setGripperOpenClose	NOTIFY gripperOpenCloseChanged )
 	Q_PROPERTY( uint batteryPercent		READ batteryPercent									NOTIFY batteryPercentChanged )
 	Q_PROPERTY( bool metalDetected		READ metalDetected									NOTIFY metalDetectedChanged )
-	Q_PROPERTY( bool leftMotorSliderChangedState				WRITE setLeftMotorSliderChangedState	NOTIFY leftDriveMotorChanged )
-	Q_PROPERTY( bool rightMotorSliderChangedState				WRITE setRightMotorSliderChangedState	NOTIFY rightDriveMotorChanged )
+	Q_PROPERTY( bool bluetoothConnected	READ bluetoothConnected								NOTIFY bluetoothConnectedChanged )
+//	Q_PROPERTY( bool leftMotorSliderChangedState				WRITE setLeftMotorSliderChangedState	NOTIFY leftDriveMotorChanged )
+//	Q_PROPERTY( bool rightMotorSliderChangedState				WRITE setRightMotorSliderChangedState	NOTIFY rightDriveMotorChanged )
 
 private:
 
+	bool _bluetoothConnected;
+	bool _metalDetected;
+	uint _batteryPercent;
 	QBluetoothSocket* _socket;
 	QByteArray _receiveMessage;
 	QByteArray _sendMessage;
 	QTimer* _timer;
-	uint _batteryPercent;
-	bool _metalDetected;
 
 public:
 	BoeingVehicleControl();
@@ -49,6 +51,8 @@ public:
 	uint batteryPercent() const;
 
 	bool metalDetected() const;
+
+	bool bluetoothConnected() const;
 
 public slots:
 
@@ -95,6 +99,8 @@ Q_SIGNALS:
 	void batteryPercentChanged();
 
 	void metalDetectedChanged();
+
+	void bluetoothConnectedChanged();
 
 private:
 

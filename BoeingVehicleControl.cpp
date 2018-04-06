@@ -14,8 +14,9 @@
 
 BoeingVehicleControl::BoeingVehicleControl()
 	: QObject()
-	, _batteryPercent( 0 )
+	, _bluetoothConnected( false )
 	, _metalDetected( false )
+	, _batteryPercent( 0 )
 {
 	_receiveMessage.resize( ReceiveMessageSize );
 	_sendMessage.resize( SendMessageSize );
@@ -75,6 +76,11 @@ uint BoeingVehicleControl::batteryPercent() const
 bool BoeingVehicleControl::metalDetected() const
 {
 	return _receiveMessage[ 1 ] & 0x01;
+}
+
+bool BoeingVehicleControl::bluetoothConnected() const
+{
+	return _bluetoothConnected;
 }
 
 void BoeingVehicleControl::update()
@@ -191,22 +197,26 @@ void BoeingVehicleControl::readSocket()
 void BoeingVehicleControl::peerConnected()
 {
 	qDebug() << "peer connected";
-	QThread::usleep( 500000 );
+//	QThread::usleep( 500000 );
+	_bluetoothConnected = true;
 	_timer->start( BluetoothPollRate );
+	emit bluetoothConnectedChanged();
 }
 
 void BoeingVehicleControl::peerDisconnected()
 {
 	qDebug() << "peer disconnected";
+	_bluetoothConnected = false;
 	_timer->stop();
+	emit bluetoothConnectedChanged();
 }
 
 void BoeingVehicleControl::setupSocket()
 {
 	_socket = new QBluetoothSocket( QBluetoothServiceInfo::RfcommProtocol );
 
-	_socket->setCurrentWriteChannel( 1 );
-	_socket->setCurrentReadChannel( 1 );
+//	_socket->setCurrentWriteChannel( 1 );
+//	_socket->setCurrentReadChannel( 1 );
 	_socket->connectToService( QBluetoothAddress( BeagleBluetoothAddress ), QBluetoothUuid( QString( UUID ) ), QIODevice::ReadWrite );
 
 	connect( _socket, &QBluetoothSocket::readyRead, this, &BoeingVehicleControl::readSocket );
