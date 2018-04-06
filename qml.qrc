@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
 	<file>Light.qml</file>
+	<file>Bluetooth.svg</file>
+	<file>Bluetooth.png</file>
     </qresource>
 </RCC>

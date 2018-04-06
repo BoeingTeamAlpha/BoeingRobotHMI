@@ -103,7 +103,7 @@ ApplicationWindow {
 			y: 156
 			width: 118
 			height: 19
-			text: qsTr("Camera Left Right")
+			text: qsTr("Dump Bed Raise Lower")
 			verticalAlignment: Text.AlignVCenter
 			horizontalAlignment: Text.AlignHCenter
 			color: "#f4f4f4"
@@ -135,53 +135,53 @@ ApplicationWindow {
 		}
 	}
 
-	Slider {
-		id: gripperraiselower
-		x: 847
-		y: 432
-		width: 112
-		height: 330
-		from: 0
-		to: 180
-		orientation: Qt.Vertical
-		value: BoeingVehicleControl.gripperRaiseLower
-		font.pointSize: 10
+//	Slider {
+//		id: gripperraiselower
+//		x: 847
+//		y: 432
+//		width: 112
+//		height: 330
+//		from: 0
+//		to: 180
+//		orientation: Qt.Vertical
+//		value: BoeingVehicleControl.gripperRaiseLower
+//		font.pointSize: 10
 
-		Label {
-			id: gripperraiselowerlabel
-			x: -9
-			y: -28
-			text: qsTr("Gripper Raise Lower")
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			color: "#f4f4f4"
-			font.pointSize: 10
-		}
-	}
+//		Label {
+//			id: gripperraiselowerlabel
+//			x: -9
+//			y: -28
+//			text: qsTr("Gripper Raise Lower")
+//			verticalAlignment: Text.AlignVCenter
+//			horizontalAlignment: Text.AlignHCenter
+//			color: "#f4f4f4"
+//			font.pointSize: 10
+//		}
+//	}
 
-	Slider {
-		id: gripperopenclose
-		x: 738
-		y: 541
-		width: 330
-		height: 112
-		from: 0
-		to: 180
-		orientation: Qt.Horizontal
-		value: BoeingVehicleControl.gripperOpenClose
-		font.pointSize: 10
+//	Slider {
+//		id: gripperopenclose
+//		x: 738
+//		y: 541
+//		width: 330
+//		height: 112
+//		from: 0
+//		to: 180
+//		orientation: Qt.Horizontal
+//		value: BoeingVehicleControl.gripperOpenClose
+//		font.pointSize: 10
 
-		Label {
-			id: gripperopencloselabel
-			x: 0
-			y: 0
-			text: qsTr("Gripper Open Close")
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			color: "#f4f4f4"
-			font.pointSize: 10
-		}
-	}
+//		Label {
+//			id: gripperopencloselabel
+//			x: 0
+//			y: 0
+//			text: qsTr("Gripper Open Close")
+//			verticalAlignment: Text.AlignVCenter
+//			horizontalAlignment: Text.AlignHCenter
+//			color: "#f4f4f4"
+//			font.pointSize: 10
+//		}
+//	}
 
 	property real batteryPercent: BoeingVehicleControl.batteryPercent
 	property bool metalDetected: BoeingVehicleControl.metalDetected
@@ -204,10 +204,43 @@ ApplicationWindow {
 	property int dumpBedRaiseLower: dumpbedraiselower.value
 	onDumpBedRaiseLowerChanged: BoeingVehicleControl.setDumpBedRaiseLower( dumpBedRaiseLower )
 
-	property int gripperRaiseLower: gripperraiselower.value
+	//	property int gripperRaiseLower: gripperraiselower.value
+	//	onGripperRaiseLowerChanged:  BoeingVehicleControl.setGripperRaiseLower( gripperRaiseLower )
+
+	//	property int gripperOpenClose: gripperopenclose.value
+	//	onGripperOpenCloseChanged: BoeingVehicleControl.setGripperOpenClose( gripperOpenClose )
+
+	Rectangle {
+		id: container
+		x: 856
+		y: 537
+		width: 220; height: 220
+		color: "#282525"
+
+		Rectangle {
+			id: rect
+			width: 60; height: 60
+			color: "#f4f4f4"
+			opacity: (600.0 - rect.x) / 600
+			radius: width
+
+			MouseArea {
+				id: gripmouse
+				anchors.fill: parent
+				drag.target: rect
+				drag.axis: Drag.XAndYAxis
+				drag.minimumX: 0
+				drag.maximumX: container.width - rect.width
+				drag.minimumY: 0
+				drag.maximumY: container.height - rect.height
+			}
+		}
+	}
+
+	property int gripperRaiseLower: rect.x
 	onGripperRaiseLowerChanged:  BoeingVehicleControl.setGripperRaiseLower( gripperRaiseLower )
 
-	property int gripperOpenClose: gripperopenclose.value
+	property int gripperOpenClose: rect.y
 	onGripperOpenCloseChanged: BoeingVehicleControl.setGripperOpenClose( gripperOpenClose )
 
 	ProgressBar {
@@ -255,5 +288,15 @@ ApplicationWindow {
 		visible: metalDetected
 		text: qsTr("MetalDetected")
 		color: "#f4f4f4"
+	}
+
+	Image {
+		id: bluetoothimage
+		x: 267
+		y: 6
+		width: 61
+		height: 54
+		source: "Bluetooth.png"
+		visible: BoeingVehicleControl.bluetoothConnected
 	}
 }
