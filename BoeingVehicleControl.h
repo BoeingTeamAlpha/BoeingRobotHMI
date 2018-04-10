@@ -18,13 +18,12 @@ class BoeingVehicleControl : public QObject
 	Q_PROPERTY( uint batteryPercent		READ batteryPercent									NOTIFY batteryPercentChanged )
 	Q_PROPERTY( bool metalDetected		READ metalDetected									NOTIFY metalDetectedChanged )
 	Q_PROPERTY( bool bluetoothConnected	READ bluetoothConnected								NOTIFY bluetoothConnectedChanged )
-//	Q_PROPERTY( bool leftMotorSliderChangedState				WRITE setLeftMotorSliderChangedState	NOTIFY leftDriveMotorChanged )
-//	Q_PROPERTY( bool rightMotorSliderChangedState				WRITE setRightMotorSliderChangedState	NOTIFY rightDriveMotorChanged )
 
 private:
 
 	bool _bluetoothConnected;
 	bool _metalDetected;
+	int _receiveMessageTime;
 	uint _batteryPercent;
 	QBluetoothSocket* _socket;
 	QByteArray _receiveMessage;
