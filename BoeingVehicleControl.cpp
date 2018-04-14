@@ -86,9 +86,10 @@ bool BoeingVehicleControl::bluetoothConnected() const
 void BoeingVehicleControl::update()
 {
 	int currentTime = QTime::currentTime().msec();
-	if ( currentTime - _receiveMessageTime > 60 )
+	if ( currentTime - _receiveMessageTime > BluetoothPollRate * 2 )
 	{
 		peerDisconnected();
+		qDebug() << "bluetooth timeout";
 		return;
 	}
 
@@ -153,6 +154,7 @@ void BoeingVehicleControl::setRightMotorSliderChangedState( bool isPressed )
 	{
 		setRightDriveMotor( 0 );
 	}
+
 	emit rightDriveMotorChanged();
 }
 
@@ -177,8 +179,8 @@ void BoeingVehicleControl::socketError( QBluetoothSocket::SocketError error )
 
 void BoeingVehicleControl::readSocket()
 {
-	_receiveMessageTime = QTime::currentTime().msec();
 	_receiveMessage = _socket->readAll();
+	_receiveMessageTime = QTime::currentTime().msec();
 
 	emit batteryPercentChanged();
 	emit metalDetectedChanged();
@@ -186,9 +188,9 @@ void BoeingVehicleControl::readSocket()
 
 void BoeingVehicleControl::peerConnected()
 {
-//	_receiveMessageTime = QTime::currentTime().msec();
 	_bluetoothConnected = true;
 	qDebug() << "connect time" << _receiveMessageTime;
+	_receiveMessageTime = QTime::currentTime().msec();
 	_timer->start( BluetoothPollRate );
 	emit bluetoothConnectedChanged();
 }
@@ -197,15 +199,19 @@ void BoeingVehicleControl::peerDisconnected()
 {
 	_timer->stop();
 	_bluetoothConnected = false;
+	_socket->close();
+	_receiveMessage = _socket->readAll();
+//	_socket->disconnectFromService();
 	emit bluetoothConnectedChanged();
 	QThread::usleep( 250000 );
-	_socket->disconnectFromService();
 	_socket->connectToService( QBluetoothAddress( BeagleBluetoothAddress ), QBluetoothUuid( QString( UUID ) ), QIODevice::ReadWrite );
 }
 
 void BoeingVehicleControl::setupSocket()
 {
 	_socket = new QBluetoothSocket( QBluetoothServiceInfo::RfcommProtocol );
+	_socket->setCurrentReadChannel( 1 );
+	_socket->setCurrentWriteChannel( 1 );
 
 	_socket->connectToService( QBluetoothAddress( BeagleBluetoothAddress ), QBluetoothUuid( QString( UUID ) ), QIODevice::ReadWrite );
 
