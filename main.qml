@@ -87,10 +87,10 @@ ApplicationWindow {
 
 	Slider {
 		id: dumpbedraiselower
-		x: 356
-		y: 432
+		x: 177
+		y: 526
 		width: 112
-		height: 330
+		height: 242
 		from: 0
 		to: 180
 		orientation: Qt.Vertical
@@ -99,8 +99,8 @@ ApplicationWindow {
 
 		Label {
 			id: dumpbedraiselowerlabel
-			x: 80
-			y: 156
+			x: 1
+			y: -31
 			width: 118
 			height: 19
 			text: qsTr("Dump Bed Raise Lower")
@@ -110,78 +110,6 @@ ApplicationWindow {
 			font.pointSize: 10
 		}
 	}
-
-	Slider {
-		id: cameraleftright
-		x: 247
-		y: 345
-		width: 330
-		height: 112
-		from: 0
-		to: 180
-		orientation: Qt.Horizontal
-		value: BoeingVehicleControl.cameraLeftRight
-		font.pointSize: 10
-
-		Label {
-			id: cameraleftrightlabel
-			x: parent.x / 2
-			y: 8
-			text: qsTr("Camera Left Right")
-			verticalAlignment: Text.AlignVCenter
-			horizontalAlignment: Text.AlignHCenter
-			color: "#f4f4f4"
-			font.pointSize: 10
-		}
-	}
-
-//	Slider {
-//		id: gripperraiselower
-//		x: 847
-//		y: 432
-//		width: 112
-//		height: 330
-//		from: 0
-//		to: 180
-//		orientation: Qt.Vertical
-//		value: BoeingVehicleControl.gripperRaiseLower
-//		font.pointSize: 10
-
-//		Label {
-//			id: gripperraiselowerlabel
-//			x: -9
-//			y: -28
-//			text: qsTr("Gripper Raise Lower")
-//			verticalAlignment: Text.AlignVCenter
-//			horizontalAlignment: Text.AlignHCenter
-//			color: "#f4f4f4"
-//			font.pointSize: 10
-//		}
-//	}
-
-//	Slider {
-//		id: gripperopenclose
-//		x: 738
-//		y: 541
-//		width: 330
-//		height: 112
-//		from: 0
-//		to: 180
-//		orientation: Qt.Horizontal
-//		value: BoeingVehicleControl.gripperOpenClose
-//		font.pointSize: 10
-
-//		Label {
-//			id: gripperopencloselabel
-//			x: 0
-//			y: 0
-//			text: qsTr("Gripper Open Close")
-//			verticalAlignment: Text.AlignVCenter
-//			horizontalAlignment: Text.AlignHCenter
-//			color: "#f4f4f4"
-//			font.pointSize: 10
-//		}
-//	}
 
 	property real batteryPercent: BoeingVehicleControl.batteryPercent
 	property bool metalDetected: BoeingVehicleControl.metalDetected
@@ -198,17 +126,8 @@ ApplicationWindow {
 	property bool rightMotorSliderReleased: rightmotorcontrol.pressed
 	onRightMotorSliderReleasedChanged: BoeingVehicleControl.setRightMotorSliderChangedState( rightMotorSliderReleased )
 
-	property int camerLeftRightValue: cameraleftright.value
-	onCamerLeftRightValueChanged: BoeingVehicleControl.setCameraLeftRight( camerLeftRightValue )
-
 	property int dumpBedRaiseLower: dumpbedraiselower.value
 	onDumpBedRaiseLowerChanged: BoeingVehicleControl.setDumpBedRaiseLower( dumpBedRaiseLower )
-
-	//	property int gripperRaiseLower: gripperraiselower.value
-	//	onGripperRaiseLowerChanged:  BoeingVehicleControl.setGripperRaiseLower( gripperRaiseLower )
-
-	//	property int gripperOpenClose: gripperopenclose.value
-	//	onGripperOpenCloseChanged: BoeingVehicleControl.setGripperOpenClose( gripperOpenClose )
 
 	Rectangle {
 		id: container
@@ -219,6 +138,8 @@ ApplicationWindow {
 
 		Rectangle {
 			id: rect
+			x: 80
+			y: 80
 			width: 60; height: 60
 			color: "#f4f4f4"
 			opacity: (600.0 - rect.x) / 600
@@ -255,38 +176,28 @@ ApplicationWindow {
 		to: 100
 	}
 
+	Text {
+		id: batteryPercentText
+		x: 755
+		y: -6
+		width: 87
+		height: 63
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+		color: "#f4f4f4"
+		text: batteryPercent
+		font.pixelSize: 12
+	}
+
 	Label {
 		id: batterylabel
-		x: 431
-		y: 21
+		x: 447
+		y: 15
 		width: 87
 		height: 23
 		verticalAlignment: Text.AlignVCenter
 		horizontalAlignment: Text.AlignHCenter
 		text: qsTr("Battery %")
-		color: "#f4f4f4"
-	}
-
-	Light {
-		id: metaldetected
-		x: 546
-		y: 83
-		width: 188
-		height: 91
-		visible: metalDetected
-		color: "#0000ff"
-	}
-
-	Label {
-		id: label
-		x: 565
-		y: 118
-		width: 134
-		height: 37
-		verticalAlignment: Text.AlignVCenter
-		horizontalAlignment: Text.AlignHCenter
-		visible: metalDetected
-		text: qsTr("MetalDetected")
 		color: "#f4f4f4"
 	}
 
@@ -299,4 +210,47 @@ ApplicationWindow {
 		source: "Bluetooth.png"
 		visible: BoeingVehicleControl.bluetoothConnected
 	}
+
+	Image {
+		id: magnetimage
+		x: 350
+		y: 6
+		width: 61
+		height: 54
+		source: "magnet.png"
+		visible: BoeingVehicleControl.metalDetected
+	}
+
+	BusyIndicator {
+		id: busyIndicator
+		x: 268
+		y: 6
+		visible: !BoeingVehicleControl.bluetoothConnected
+	}
+
+	Label {
+		id: gripperupdownlabel
+		x: 811
+		y: 754
+		width: 213
+		height: 39
+		transform: Rotation { origin.x: 0; origin.y: 0; angle: 270}
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+		color: "#f4f4f4"
+		text: qsTr("Gripper Down Up")
+	}
+
+	Label {
+		id: gripperleftrightlabel
+		x: 860
+		y: 492
+		width: 213
+		height: 39
+		verticalAlignment: Text.AlignVCenter
+		horizontalAlignment: Text.AlignHCenter
+		color: "#f4f4f4"
+		text: qsTr("Gripper Open Close")
+	}
+
 }
