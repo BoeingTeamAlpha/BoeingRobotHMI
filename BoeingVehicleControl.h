@@ -1,7 +1,7 @@
 #ifndef BOEINGVEHICLECONTROL_H
 #define BOEINGVEHICLECONTROL_H
 
-#include <QtBluetooth/QBluetoothSocket>
+#include <QTcpSocket>
 #include <QByteArray>
 #include <QObject>
 #include <QTimer>
@@ -25,7 +25,7 @@ private:
 	bool _metalDetected;
 	int _receiveMessageTime;
 	uint _batteryPercent;
-	QBluetoothSocket* _socket;
+	QTcpSocket* _socket;
 	QByteArray _receiveMessage;
 	QByteArray _sendMessage;
 	QTimer* _timer;
@@ -73,7 +73,7 @@ public slots:
 
 	void setRightMotorSliderChangedState( bool isPressed );
 
-	void socketError( QBluetoothSocket::SocketError error );
+	void socketError( QTcpSocket::SocketError error );
 
 	void readSocket();
 

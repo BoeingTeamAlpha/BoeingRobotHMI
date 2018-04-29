@@ -158,18 +158,18 @@ void BoeingVehicleControl::setRightMotorSliderChangedState( bool isPressed )
 	emit rightDriveMotorChanged();
 }
 
-void BoeingVehicleControl::socketError( QBluetoothSocket::SocketError error )
+void BoeingVehicleControl::socketError( QTcpSocket::SocketError error )
 {
 	switch ( error )
 	{
-	case QBluetoothSocket::NoSocketError:
+	case QTcpSocket::ConnectedState:
 		qDebug() << "no socket error";
 		_timer->start( BluetoothPollRate );
 		break;
 
 	default:
 		qDebug() << "socket error " << error << _socket->state();
-		if ( _socket->state() != QBluetoothSocket::ClosingState )
+		if ( _socket->state() != QTcpSocket::ClosingState )
 		{
 			peerDisconnected();
 		}
@@ -206,21 +206,21 @@ void BoeingVehicleControl::peerDisconnected()
 	emit bluetoothConnectedChanged();
 	emit metalDetectedChanged();
 	QThread::usleep( 250000 );
-	_socket->connectToService( QBluetoothAddress( BeagleBluetoothAddress ), QBluetoothUuid( QString( UUID ) ), QIODevice::ReadWrite );
+//	_socket->connectToService( QBluetoothAddress( BeagleBluetoothAddress ), QBluetoothUuid( QString( UUID ) ), QIODevice::ReadWrite );
 }
 
 void BoeingVehicleControl::setupSocket()
 {
-	_socket = new QBluetoothSocket( QBluetoothServiceInfo::RfcommProtocol );
+	_socket = new QTcpSocket( this );
 	_socket->setCurrentReadChannel( 1 );
 	_socket->setCurrentWriteChannel( 1 );
 
-	_socket->connectToService( QBluetoothAddress( BeagleBluetoothAddress ), QBluetoothUuid( QString( UUID ) ), QIODevice::ReadWrite );
+	_socket->connectToHost( "127.0.0.1", 3333 );
 
-	connect( _socket, &QBluetoothSocket::readyRead, this, &BoeingVehicleControl::readSocket );
-	connect( _socket, &QBluetoothSocket::connected, this, &BoeingVehicleControl::peerConnected );
-	connect( _socket, &QBluetoothSocket::disconnected, this, &BoeingVehicleControl::peerDisconnected );
-	connect( _socket, QOverload<QBluetoothSocket::SocketError>::of(&QBluetoothSocket::error),
+	connect( _socket, &QTcpSocket::readyRead, this, &BoeingVehicleControl::readSocket );
+	connect( _socket, &QTcpSocket::connected, this, &BoeingVehicleControl::peerConnected );
+	connect( _socket, &QTcpSocket::disconnected, this, &BoeingVehicleControl::peerDisconnected );
+	connect( _socket, QOverload<QTcpSocket::SocketError>::of(&QTcpSocket::error),
 			 this, &BoeingVehicleControl::socketError);
 }
 
