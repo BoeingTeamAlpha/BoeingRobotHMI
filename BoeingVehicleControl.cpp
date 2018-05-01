@@ -1,6 +1,7 @@
 #include "BoeingVehicleControl.h"
 
 #include "SendMessageIndex.h"
+#include <QHostAddress>
 
 #include <stdint.h>
 #include <QDebug>
@@ -85,13 +86,13 @@ bool BoeingVehicleControl::bluetoothConnected() const
 
 void BoeingVehicleControl::update()
 {
-	int currentTime = QTime::currentTime().msec();
-	if ( currentTime - _receiveMessageTime > BluetoothPollRate * 2 )
-	{
-		peerDisconnected();
-		qDebug() << "bluetooth timeout";
-		return;
-	}
+//	int currentTime = QTime::currentTime().msec();
+//	if ( currentTime - _receiveMessageTime > BluetoothPollRate * 2 )
+//	{
+//		peerDisconnected();
+//		qDebug() << "bluetooth timeout";
+//		return;
+//	}
 
 	_socket->write( _sendMessage );
 }
@@ -212,16 +213,21 @@ void BoeingVehicleControl::peerDisconnected()
 void BoeingVehicleControl::setupSocket()
 {
 	_socket = new QTcpSocket( this );
-	_socket->setCurrentReadChannel( 1 );
-	_socket->setCurrentWriteChannel( 1 );
+//	_socket->setCurrentReadChannel( 1 );
+//	_socket->setCurrentWriteChannel( 1 );
 
-	_socket->connectToHost( "127.0.0.1", 3333 );
 
 	connect( _socket, &QTcpSocket::readyRead, this, &BoeingVehicleControl::readSocket );
 	connect( _socket, &QTcpSocket::connected, this, &BoeingVehicleControl::peerConnected );
 	connect( _socket, &QTcpSocket::disconnected, this, &BoeingVehicleControl::peerDisconnected );
 	connect( _socket, QOverload<QTcpSocket::SocketError>::of(&QTcpSocket::error),
 			 this, &BoeingVehicleControl::socketError);
+	_socket->connectToHost( QHostAddress( QString( "192.168.8.1" ) ), 555 );
+
+//	if( _socket->waitForConnected( 3000 ) )
+//	{
+//		_socket->disconnectFromHost();
+//	}
 }
 
 void BoeingVehicleControl::zeroReceiveMessage()
