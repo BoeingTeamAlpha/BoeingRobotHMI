@@ -16,8 +16,9 @@
 
 BoeingVehicleControl::BoeingVehicleControl()
 	: QObject()
-	, _bluetoothConnected( false )
+	, _connected( false )
 	, _metalDetected( false )
+	, _motorConverter( RangeType( 0, 50 ), RangeType( 0, 25 ) )
 	, _receiveMessageTime( 0 )
 	, _batteryPercent( 0 )
 {
@@ -79,9 +80,9 @@ bool BoeingVehicleControl::metalDetected() const
 	return _receiveMessage[ 1 ] & 0x01;
 }
 
-bool BoeingVehicleControl::bluetoothConnected() const
+bool BoeingVehicleControl::connected() const
 {
-	return _bluetoothConnected;
+	return _connected;
 }
 
 void BoeingVehicleControl::update()
@@ -99,14 +100,47 @@ void BoeingVehicleControl::update()
 
 void BoeingVehicleControl::setLeftDriveMotor( const int dutyCycle )
 {
-	uint16_t temp = _bluetoothConnected ? static_cast< uint16_t >( dutyCycle ) : 0;
+	uint16_t temp = 0;
+	if ( _connected )
+	{
+		if ( abs( dutyCycle ) <= 50 )
+		{
+			temp = _motorConverter.convertXtoY( abs( dutyCycle ) );
+			if ( dutyCycle < 0 )
+			{
+				temp *= -1;
+			}
+		}
+		else
+		{
+			temp = dutyCycle;
+		}
+		
+	}
+//	uint16_t temp = _connected ? static_cast< uint16_t >( dutyCycle ) : 0;
 	_sendMessage[ SendMessageIndex::LeftDriveMotor - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::LeftDriveMotor ] = ( temp >> 8 ) & 0xff;
 }
 
 void BoeingVehicleControl::setRightDriveMotor( const int dutyCycle )
 {
-	uint16_t temp = _bluetoothConnected ? static_cast< uint16_t >( dutyCycle ) : 0;
+	uint16_t temp = 0;
+	if ( _connected )
+	{
+		if ( abs( dutyCycle ) <= 50 )
+		{
+			temp = _motorConverter.convertXtoY( abs( dutyCycle ) );
+			if ( dutyCycle < 0 )
+			{
+				temp *= -1;
+			}
+		}
+		else
+		{
+			temp = dutyCycle;
+		}
+
+	}
 	_sendMessage[ SendMessageIndex::RightDriveMotor - 1 ] = temp & 0xFF;
 	_sendMessage[ SendMessageIndex::RightDriveMotor ] = ( temp >> 8 ) & 0xff;
 }
@@ -189,22 +223,22 @@ void BoeingVehicleControl::readSocket()
 
 void BoeingVehicleControl::peerConnected()
 {
-	_bluetoothConnected = true;
+	_connected = true;
 	qDebug() << "connect time" << _receiveMessageTime;
 	_receiveMessageTime = QTime::currentTime().msec();
 	_timer->start( BluetoothPollRate );
-	emit bluetoothConnectedChanged();
+	emit connectedChanged();
 	emit metalDetectedChanged();
 }
 
 void BoeingVehicleControl::peerDisconnected()
 {
 	_timer->stop();
-	_bluetoothConnected = false;
+	_connected = false;
 	_socket->close();
 	_receiveMessage = _socket->readAll();
 //	_socket->disconnectFromService();
-	emit bluetoothConnectedChanged();
+	emit connectedChanged();
 	emit metalDetectedChanged();
 	QThread::usleep( 250000 );
 //	_socket->connectToService( QBluetoothAddress( BeagleBluetoothAddress ), QBluetoothUuid( QString( UUID ) ), QIODevice::ReadWrite );

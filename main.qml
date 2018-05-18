@@ -202,13 +202,13 @@ ApplicationWindow {
 	}
 
 	Image {
-		id: bluetoothimage
+		id: connectedimage
 		x: 267
 		y: 6
 		width: 61
 		height: 54
-		source: "Bluetooth.png"
-		visible: BoeingVehicleControl.bluetoothConnected
+		source: "Robot.png"
+		visible: BoeingVehicleControl.connected
 	}
 
 	Image {
@@ -225,7 +225,7 @@ ApplicationWindow {
 		id: busyIndicator
 		x: 268
 		y: 6
-		visible: !BoeingVehicleControl.bluetoothConnected
+		visible: !BoeingVehicleControl.connected
 	}
 
 	Label {

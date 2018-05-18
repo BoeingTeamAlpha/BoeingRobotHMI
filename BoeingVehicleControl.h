@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QObject>
 #include <QTimer>
+#include "LinearConverter.h"
 
 class BoeingVehicleControl : public QObject
 {
@@ -17,12 +18,19 @@ class BoeingVehicleControl : public QObject
 	Q_PROPERTY( uint gripperOpenClose	READ gripperOpenClose	WRITE setGripperOpenClose	NOTIFY gripperOpenCloseChanged )
 	Q_PROPERTY( uint batteryPercent		READ batteryPercent									NOTIFY batteryPercentChanged )
 	Q_PROPERTY( bool metalDetected		READ metalDetected									NOTIFY metalDetectedChanged )
-	Q_PROPERTY( bool bluetoothConnected	READ bluetoothConnected								NOTIFY bluetoothConnectedChanged )
+	Q_PROPERTY( bool connected			READ connected										NOTIFY connectedChanged )
 
 private:
 
-	bool _bluetoothConnected;
+	// typedef the appropriate range for the class
+	typedef LibBBB::Math::Range< int > RangeType;
+	
+	// typedef the converter for easier instantiation
+	typedef LibBBB::Math::LinearConverter< int > Converter;
+	
+	bool _connected;
 	bool _metalDetected;
+	Converter _motorConverter;
 	int _receiveMessageTime;
 	uint _batteryPercent;
 	QTcpSocket* _socket;
@@ -51,7 +59,7 @@ public:
 
 	bool metalDetected() const;
 
-	bool bluetoothConnected() const;
+	bool connected() const;
 
 public slots:
 
@@ -99,7 +107,7 @@ Q_SIGNALS:
 
 	void metalDetectedChanged();
 
-	void bluetoothConnectedChanged();
+	void connectedChanged();
 
 private:
 

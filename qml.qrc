@@ -4,5 +4,6 @@
 	<file>Bluetooth.svg</file>
 	<file>Bluetooth.png</file>
 	<file>magnet.png</file>
+	<file>Robot.png</file>
     </qresource>
 </RCC>
